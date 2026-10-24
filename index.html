@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CODENG — Play. Learn. Code. Build.</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#10142a;--mut:#5b6280;--ac:#4f6bff;--ac2:#8b5cf6;--ok:#16a34a;--bad:#dc2626;--bd:#dde1ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0f24;--card:#121936;--tx:#eef0ff;--mut:#9aa3c7;--bd:#262e57;--ac:#6b8bff}}
+:root[data-theme="dark"]{--bg:#0a0f24;--card:#121936;--tx:#eef0ff;--mut:#9aa3c7;--bd:#262e57;--ac:#6b8bff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,"Noto Sans Telugu","Noto Sans Devanagari",sans-serif}
+html{color-scheme:light dark}
+main{max-width:720px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.logo{font-weight:800;font-size:22px;letter-spacing:.5px;background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{color:var(--mut);font-size:13px;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin:12px 0}
+button{font:inherit;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+button.s{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}
+.langs{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.langs button.on{outline:3px solid var(--ac2)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tabs button.on{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff}
+textarea{width:100%;min-height:110px;font:15px/1.5 ui-monospace,Menlo,monospace;background:#0b1020;color:#e6e9ff;border:1px solid var(--bd);border-radius:10px;padding:10px;direction:ltr}
+pre{background:#0b1020;color:#e6e9ff;padding:10px;border-radius:10px;overflow-x:auto;direction:ltr;margin:8px 0}
+.bar{height:10px;border-radius:6px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .6s}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.msg{margin-top:10px;padding:10px;border-radius:10px;border:1px solid var(--bd)}.ok{border-color:var(--ok);color:var(--ok)}.bad{border-color:var(--bad);color:var(--bad)}
+.note{font-size:13px;color:var(--mut)}
+.pop{animation:p .5s}@keyframes p{0%{transform:scale(.9);opacity:.3}100%{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}.bar i{transition:none}}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="logo">&lt;/&gt; CODENG</div><p class="tag">Play. Learn. Code. Build.</p></div>
+<button class="s" id="theme" aria-label="Theme">◐</button></header>
+
+<section id="onb" class="card">
+<h2 id="t-choose"></h2>
+<div class="langs" id="langs" role="group"></div>
+<div class="row"><button id="start"></button></div>
+<p class="note" id="t-note"></p>
+</section>
+
+<section id="app" class="hide">
+<div class="card">
+<div class="row" style="justify-content:space-between;align-items:center"><strong id="t-level"></strong><span id="stats"></span></div>
+<div class="bar" aria-hidden="true"><i id="pb"></i></div>
+<div class="row"><button class="s" id="change"></button></div>
+</div>
+<div class="card">
+<h2 id="t-lesson"></h2>
+<pre>print("Hello World")</pre>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div id="expl" aria-live="polite"></div>
+</div>
+<div class="card">
+<h2 id="t-task"></h2>
+<p id="t-goal"></p>
+<label for="code" class="note" id="t-editor"></label>
+<textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+<div class="row"><button class="s" id="run"></button><button class="s" id="reset"></button><button class="s" id="hint"></button><button id="submit"></button></div>
+<pre id="out" aria-live="polite">&gt; </pre>
+<div id="msg" class="msg hide" role="status"></div>
+<p class="note" id="t-demo"></p>
+</div>
+<div class="card"><p class="note" id="t-cfg"></p></div>
+</section>
+</main>
+<script>
+var L={
+en:{n:"English",choose:"Choose your learning language",start:"Start",note:"Translations are drafts for review. Missing text is marked, never guessed.",level:"Level 3 · Python · Printing text",lesson:"Lesson: print()",task:"Challenge",goal:"Make the program show exactly: Hello World",editor:"Type your Python code here",run:"Preview",reset:"Reset",hint:"Hint",submit:"Submit",ok:"Correct! +10 XP",again:"Already completed — no extra XP.",bad:"Not yet. Check the text inside the quotes and the brackets.",hintT:"Write print(\"...\") and put the words inside the quotes.",demo:"Preview and checking run in your browser as a demo. They are NOT real code execution.",cfg:"Not yet configured: sign-in (Supabase), AI tutor, secure code execution service. Progress is saved only on this device.",change:"Change language",modes:["Very simple","Step by step","Real life"],ex:["print tells the computer to show something on the screen.","1) print — the command that shows. 2) ( ) — what we give to print goes inside. 3) \" \" — tells the computer this is text.","Like a shop signboard showing a name, print shows words on the screen."],pv:"No printable text found.",xp:"XP"},
+te:{n:"తెలుగు",choose:"మీ నేర్చుకునే భాషను ఎంచుకోండి",start:"ప్రారంభించండి",note:"అనువాదాలు సమీక్షకు డ్రాఫ్ట్‌లు. అనువాదం లేనిచోట అది స్పష్టంగా చూపిస్తాం.",level:"స్థాయి 3 · Python · text చూపించడం",lesson:"పాఠం: print()",task:"సవాలు",goal:"ప్రోగ్రామ్ ఖచ్చితంగా ఇది చూపించాలి: Hello World",editor:"మీ Python code ఇక్కడ రాయండి",run:"ప్రివ్యూ",reset:"రీసెట్",hint:"సూచన",submit:"సమర్పించండి",ok:"సరైనది! +10 XP",again:"ఇది ఇప్పటికే పూర్తైంది — అదనపు XP లేదు.",bad:"ఇంకా కాదు. కోట్స్ లోపల ఉన్న మాట, కుండలీకరణాలు చూడండి.",hintT:"print(\"...\") రాసి, కోట్స్ లోపల మాటలు రాయండి.",demo:"ప్రివ్యూ, తనిఖీ మీ బ్రౌజర్‌లో డెమోగా జరుగుతాయి. ఇవి నిజమైన code execution కాదు.",cfg:"ఇంకా సెట్ చేయలేదు: లాగిన్ (Supabase), AI ట్యూటర్, సురక్షిత code execution. ప్రోగ్రెస్ ఈ పరికరంలో మాత్రమే ఉంటుంది.",change:"భాష మార్చండి",modes:["చాలా సులభంగా","దశలవారీగా","నిజ జీవిత ఉదాహరణ"],ex:["ఈ code తెరపై Hello World అనే మాటను చూపిస్తుంది. print అంటే తెరపై ఏదైనా చూపించమని కంప్యూటర్‌కు చెప్పడం.","1) print — చూపించే command. 2) ( ) — print కు ఇచ్చేది లోపల రాస్తాం. 3) \" \" — ఇది text అని కంప్యూటర్‌కు చెబుతుంది.","దుకాణం బోర్డు పేరును చూపించినట్లే, print తెరపై మాటలను చూపిస్తుంది."],pv:"చూపించడానికి text కనబడలేదు.",xp:"XP"},
+hi:{n:"हिन्दी",choose:"अपनी सीखने की भाषा चुनें",start:"शुरू करें",note:"अनुवाद समीक्षा के लिए ड्राफ्ट हैं। जहाँ अनुवाद नहीं है, वह साफ़ बताया जाएगा।",level:"लेवल 3 · Python · टेक्स्ट प्रिंट करना",lesson:"पाठ: print()",task:"चुनौती",goal:"प्रोग्राम ठीक यही दिखाए: Hello World",editor:"अपना Python code यहाँ लिखें",run:"प्रीव्यू",reset:"रीसेट",hint:"संकेत",submit:"जमा करें",ok:"सही! +10 XP",again:"यह पहले पूरा हो चुका है — अतिरिक्त XP नहीं।",bad:"अभी नहीं। कोट्स के अंदर का शब्द और ब्रैकेट जाँचें।",hintT:"print(\"...\") लिखें और शब्द कोट्स के अंदर रखें।",demo:"प्रीव्यू और जाँच आपके ब्राउज़र में डेमो के रूप में चलती है। यह असली code execution नहीं है।",cfg:"अभी कॉन्फ़िगर नहीं: लॉगिन (Supabase), AI ट्यूटर, सुरक्षित code execution। प्रगति सिर्फ़ इसी डिवाइस पर सहेजी जाती है।",change:"भाषा बदलें",modes:["बहुत आसान","चरण-दर-चरण","असल ज़िंदगी का उदाहरण"],ex:["print कंप्यूटर को स्क्रीन पर कुछ दिखाने के लिए कहता है।","1) print — दिखाने वाला command। 2) ( ) — print को जो देना है वह अंदर लिखते हैं। 3) \" \" — बताता है कि यह text है।","जैसे दुकान का बोर्ड नाम दिखाता है, वैसे print स्क्रीन पर शब्द दिखाता है।"],pv:"दिखाने लायक text नहीं मिला।",xp:"XP"}
+};
+var S={lang:"en",mode:0,xp:0,done:false},$=function(i){return document.getElementById(i)},START='print("")';
+function load(){try{var d=JSON.parse(localStorage.getItem("codeng")||"{}");if(d.lang&&L[d.lang])S.lang=d.lang;S.xp=d.xp||0;S.done=!!d.done;S.has=!!d.lang}catch(e){}}
+function save(){try{localStorage.setItem("codeng",JSON.stringify({lang:S.lang,xp:S.xp,done:S.done}))}catch(e){}}
+function T(){return L[S.lang]}
+function paintOnb(){var t=T();$("t-choose").textContent=t.choose;$("start").textContent=t.start;$("t-note").textContent=t.note;
+var c=$("langs");c.innerHTML="";Object.keys(L).forEach(function(k){var b=document.createElement("button");b.className="s"+(k===S.lang?" on":"");b.textContent=L[k].n;b.lang=k;b.onclick=function(){S.lang=k;save();paintOnb()};c.appendChild(b)})}
+function paint(){var t=T();document.documentElement.lang=S.lang;
+["level","lesson","task","goal","editor","demo","cfg"].forEach(function(k){$("t-"+k).textContent=t[k]});
+$("run").textContent=t.run;$("reset").textContent=t.reset;$("hint").textContent=t.hint;$("submit").textContent=t.submit;$("change").textContent=t.change;
+$("stats").textContent="⭐ "+S.xp+" "+t.xp;$("pb").style.width=(S.done?100:0)+"%";
+var tb=$("tabs");tb.innerHTML="";t.modes.forEach(function(m,i){var b=document.createElement("button");b.className="s"+(i===S.mode?" on":"");b.textContent=m;b.setAttribute("role","tab");b.onclick=function(){S.mode=i;paint()};tb.appendChild(b)});
+$("expl").textContent=t.ex[S.mode]}
+function show(m,c){var e=$("msg");e.className="msg "+c+" pop";e.textContent=m}
+var RX=/^\s*print\(\s*(["'])(.*?)\1\s*\)\s*$/;
+$("start").onclick=function(){save();$("onb").classList.add("hide");$("app").classList.remove("hide");$("code").value=START;paint()};
+$("change").onclick=function(){$("app").classList.add("hide");$("onb").classList.remove("hide");paintOnb()};
+$("reset").onclick=function(){$("code").value=START;$("out").textContent="> ";$("msg").className="msg hide"};
+$("hint").onclick=function(){show(T().hintT,"")};
+$("run").onclick=function(){var o=[];$("code").value.split("\n").forEach(function(l){var m=RX.exec(l);if(m)o.push(m[2])});$("out").textContent="> "+(o.length?o.join("\n> "):T().pv)};
+$("submit").onclick=function(){var t=T(),ls=$("code").value.split("\n").filter(function(l){return l.trim()}),m=ls.length===1&&RX.exec(ls[0]);
+if(m&&m[2]==="Hello World"){if(S.done){show(t.again,"ok")}else{S.done=true;S.xp+=10;save();paint();show(t.ok,"ok")}}else show(t.bad,"bad")};
+$("theme").onclick=function(){var r=document.documentElement,d=r.getAttribute("data-theme")==="dark"||(!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);r.setAttribute("data-theme",d?"light":"dark")};
+load();paintOnb();
+</script>
+</body>
+</html>
